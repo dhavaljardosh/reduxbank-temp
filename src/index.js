@@ -1,17 +1,38 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import { combineReducers, createStore } from "redux";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const balanceReducer = (balance = 1000, action) => {
+  switch (action.type) {
+    case "WITHDRAW_MONEY": {
+      console.log(balance);
+      let newTotal = balance - action.amount;
+      return newTotal < 0 ? 0 : newTotal;
+    }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+    case "DEPOSIT_MONEY": {
+      let newTotal = balance + action.amount;
+      return newTotal < 0 ? 0 : newTotal;
+    }
+
+    default:
+      console.log("UNKNOWN");
+      return balance;
+  }
+};
+
+const reducer = combineReducers({ balanceReducer });
+
+export const store = createStore(reducer, { balanceReducer: 1000 });
+console.log(store.getState());
+const render = () => {
+  return ReactDOM.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    document.getElementById("root")
+  );
+};
+render();
+store.subscribe(render);
